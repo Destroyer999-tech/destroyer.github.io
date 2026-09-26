@@ -1,77 +1,357 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Roshan's Portfolio</title>
-    <link rel="stylesheet" href="style.css">
-    <!-- Include Typed.js Library -->
-    <script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12"></script>
-</head> 
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ACCESS TERMINAL</title>
+
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        height: 100vh;
+        overflow: hidden;
+        background: #020202;
+        color: #00ff66;
+        font-family: "Courier New", monospace;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    /* Matrix background */
+    canvas {
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        opacity: 0.18;
+    }
+
+    .scanlines {
+        position: fixed;
+        inset: 0;
+        z-index: 2;
+        pointer-events: none;
+        background: repeating-linear-gradient(
+            to bottom,
+            rgba(0,255,100,0.025) 0px,
+            rgba(0,255,100,0.025) 1px,
+            transparent 1px,
+            transparent 4px
+        );
+    }
+
+    .terminal {
+        position: relative;
+        z-index: 3;
+        width: min(90%, 700px);
+        padding: 45px 35px;
+        border: 1px solid #00ff66;
+        background: rgba(0, 10, 5, 0.88);
+        box-shadow:
+            0 0 15px #00ff66,
+            inset 0 0 25px rgba(0,255,100,0.08);
+        text-align: center;
+    }
+
+    .terminal::before {
+        content: "● ● ●";
+        position: absolute;
+        top: 8px;
+        left: 15px;
+        color: #00ff66;
+        letter-spacing: 5px;
+        font-size: 10px;
+    }
+
+    .status {
+        font-size: 12px;
+        margin-bottom: 30px;
+        opacity: 0.7;
+        letter-spacing: 3px;
+    }
+
+    .status::before {
+        content: "[SYSTEM ONLINE] ";
+        color: #00ff66;
+    }
+
+    h1 {
+        font-size: clamp(25px, 5vw, 45px);
+        margin-bottom: 15px;
+        text-transform: uppercase;
+        letter-spacing: 5px;
+        text-shadow:
+            0 0 5px #00ff66,
+            0 0 15px #00ff66;
+        animation: flicker 2s infinite;
+    }
+
+    .cursor {
+        display: inline-block;
+        width: 10px;
+        height: 25px;
+        background: #00ff66;
+        margin-left: 5px;
+        animation: blink 0.7s infinite;
+    }
+
+    .warning {
+        color: #00aa44;
+        font-size: 13px;
+        margin: 20px 0 35px;
+        letter-spacing: 2px;
+    }
+
+    .buttons {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        flex-wrap: wrap;
+    }
+
+    button {
+        font-family: "Courier New", monospace;
+        font-weight: bold;
+        font-size: 15px;
+        letter-spacing: 2px;
+        padding: 14px 25px;
+        min-width: 180px;
+        color: #00ff66;
+        background: transparent;
+        border: 1px solid #00ff66;
+        cursor: pointer;
+        transition: 0.25s;
+        position: relative;
+        overflow: hidden;
+    }
+
+    button:hover {
+        color: #000;
+        background: #00ff66;
+        box-shadow:
+            0 0 10px #00ff66,
+            0 0 30px #00ff66;
+        transform: translateY(-2px);
+    }
+
+    button:active {
+        transform: scale(0.96);
+    }
+
+    .footer {
+        margin-top: 35px;
+        font-size: 10px;
+        opacity: 0.4;
+        letter-spacing: 2px;
+    }
+
+    /* Result page */
+    #result {
+        display: none;
+    }
+
+    #result h1 {
+        font-size: clamp(20px, 4vw, 35px);
+        line-height: 1.5;
+        letter-spacing: 2px;
+    }
+
+    .result-text {
+        margin: 25px auto;
+        max-width: 580px;
+        font-size: 16px;
+        line-height: 1.8;
+        color: #00dd55;
+    }
+
+    .back {
+        min-width: 130px;
+        font-size: 12px;
+    }
+
+    @keyframes blink {
+        50% {
+            opacity: 0;
+        }
+    }
+
+    @keyframes flicker {
+        0%, 18%, 22%, 63%, 64%, 65%, 100% {
+            opacity: 1;
+        }
+
+        20%, 62% {
+            opacity: 0.6;
+        }
+    }
+
+    @media(max-width: 500px) {
+        .terminal {
+            padding: 40px 20px;
+        }
+
+        .buttons {
+            flex-direction: column;
+            align-items: center;
+        }
+
+        button {
+            width: 100%;
+        }
+    }
+</style>
+</head>
+
 <body>
-    <header>
-        <h1>Roshan's Portfolio</h1>
-        <p>A glimpse into my world of interests and goals</p>
-    </header>
-    
-    <nav>
-        <ul>
-            <li><a href="#about">About Me</a></li>
-            <li><a href="#interests">Interests</a></li>
-            <li><a href="#education">Education</a></li>
-            <li><a href="#goals">Goals</a></li>
-        </ul>
-    </nav>
 
-    <section id="about">
-        <div class="home-content">
-            <h3>Hello, It's me</h3>
-            <h1>Roshan Khadka</h1>
-            <h5>And I'm a <span class="pro-text"></span></h5>
-        </div>
-    </section>
-    
-    <section id="interests">
-        <h2>Interests & Hobbies</h2>
-        <ul>
-            <li><strong>Hacking:</strong> I enjoy exploring ethical hacking, understanding systems, and improving security.</li>
-            <li><strong>Mobile Legends:</strong> Playing MLBB for 2 years, I now main as a tank, with Gatotkaca being my favorite hero.I enjoy playing assassin's more than tanks but my device doesn't seem to understand my desire and satisfaction.</li>
-            <li><strong>Anime:</strong> I'm a fan of romance and comedy anime, always looking for captivating stories.It will be best to not talk about my pending anime's One-Piece,HxH,Monster,Black Clover and Bleach.</li>
-            <li><strong>Current Situations:</strong>Probably stuck into 73 episodes of BLEACH.....🙃</li>
-        </ul>
-    </section>
-    
-    <section id="education">
-        <h2>Education</h2>
-        <p>I'm currently in 9th grade, with a focus on studying the fundamentals of electricity and technology. I find these subjects both challenging and fascinating.</p>
-    </section>
-    
-    <section id="goals">
-        <h2>Goals</h2>
-        <p><strong>Short-term Goals:</strong> Improving my hacking skills and exploring new strategies in Mobile Legends.</p>
-        <p><strong>Long-term Goals:</strong> Pursuing a career in technology, possibly in ethical hacking or professional gaming.</p>
-    </section>
-    <strong>Presented By:ROSHAN KHADKA </strong>
-    
-    <footer>
-        <p>Check out my YouTube channel: <a href="https://www.youtube.com/@InactBreacher/" target="_blank">My YouTube Channel</a></p>
-     <p>Click here for github: <a href="https://github.com/destroyer999-tech" target="_blank">My github account</a></p>
-        <p>Click here to support me: <a href="https://www.instagram.com/destroyer_obito9999/" target="_blank">Through Instagram</a></p>
-    </footer>
+<canvas id="matrix"></canvas>
+<div class="scanlines"></div>
 
-    <script>
-        // Initialize Typed.js
-        var typed = new Typed(".pro-text", {
-            strings: [
-                "Also known as DESTROYER",
-                "Grade nine engineering student",
-                "Learning programming languages such as C, Java, C++ etc.",
-            ],
-            typeSpeed: 100,
-            backSpeed: 100,
-            backDelay: 1000,
-            loop: true
-        });
-    </script>
+<!-- FIRST PAGE -->
+<div class="terminal" id="question">
+
+    <div class="status">SECURE CONNECTION</div>
+
+    <h1>
+        ENTER IF U STILL TRUST<span class="cursor"></span>
+    </h1>
+
+    <div class="warning">
+        // YOU ARE ABOUT TO MAKE A DECISION
+    </div>
+
+    <div class="buttons">
+        <button onclick="exitPage()">[ EXIT ]</button>
+        <button onclick="trustPage()">[ I TRUST YOU ]</button>
+    </div>
+
+    <div class="footer">
+        CONNECTION_ID: 0xTRUST // ACCESS AWAITS
+    </div>
+
+</div>
+
+
+<!-- RESULT PAGE -->
+<div class="terminal" id="result">
+
+    <div class="status">ACCESS GRANTED</div>
+
+    <h1 id="resultTitle"></h1>
+
+    <div class="result-text" id="resultText"></div>
+
+    <button class="back" onclick="location.reload()">
+        [ RETURN ]
+    </button>
+
+    <div class="footer">
+        SESSION TERMINATED
+    </div>
+
+</div>
+
+
+<script>
+
+/* =========================
+   BUTTON LOGIC
+========================= */
+
+function trustPage() {
+
+    document.getElementById("question").style.display = "none";
+    document.getElementById("result").style.display = "block";
+
+    document.getElementById("resultTitle").innerHTML =
+        "WELL...";
+
+    document.getElementById("resultText").innerHTML =
+        "well, i never thought u actually trusted me..<br>" +
+        "thanks for confirmations.";
+}
+
+
+function exitPage() {
+
+    document.getElementById("question").style.display = "none";
+    document.getElementById("result").style.display = "block";
+
+    document.getElementById("resultTitle").innerHTML =
+        "HAHA.";
+
+    document.getElementById("resultText").innerHTML =
+        "Doesnt matter now,lolllllll";
+}
+
+
+/* =========================
+   MATRIX EFFECT
+========================= */
+
+const canvas = document.getElementById("matrix");
+const ctx = canvas.getContext("2d");
+
+function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+}
+
+resizeCanvas();
+
+const chars =
+    "01ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz#$%@&<>/";
+
+const fontSize = 14;
+let columns = Math.floor(canvas.width / fontSize);
+let drops = Array(columns).fill(1);
+
+function drawMatrix() {
+
+    ctx.fillStyle = "rgba(0, 0, 0, 0.08)";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    ctx.fillStyle = "#00ff66";
+    ctx.font = fontSize + "px Courier New";
+
+    for (let i = 0; i < drops.length; i++) {
+
+        const char =
+            chars[Math.floor(Math.random() * chars.length)];
+
+        ctx.fillText(
+            char,
+            i * fontSize,
+            drops[i] * fontSize
+        );
+
+        if (
+            drops[i] * fontSize > canvas.height &&
+            Math.random() > 0.975
+        ) {
+            drops[i] = 0;
+        }
+
+        drops[i]++;
+    }
+}
+
+setInterval(drawMatrix, 35);
+
+window.addEventListener("resize", () => {
+    resizeCanvas();
+    columns = Math.floor(canvas.width / fontSize);
+    drops = Array(columns).fill(1);
+});
+
+</script>
+
 </body>
 </html>
+```
